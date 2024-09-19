@@ -1,0 +1,13 @@
+services:
+  superbnbbackend:
+    depends_on:
+      - superbnbdb
+    build: 
+      context: ../superBnB_backend_18_9_2024
+      platforms:
+        - "linux/arm64"
+        - "linux/amd64"
+    ports:
+      - 8181:8080
+    env_file:
+      - ../superBnB_backend_18_9_2024/.env.testing
