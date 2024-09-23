@@ -50,14 +50,20 @@ public class BuchungenServiceImpl implements BuchungenService {
         Buchungen buchung = new Buchungen();
         buchung.setBenutzer(benutzer);
         buchung.setFerienwohnung(ferienwohnung);
+        buchung.setBuchungsdatum(buchungenCreateRequestDto.buchungsdatum());
         buchung.setCheckinDatum(buchungenCreateRequestDto.checkinDatum());
         buchung.setCheckoutDatum(buchungenCreateRequestDto.checkoutDatum());
 
         // 保存 Buchungen 实体
-        Buchungen savedBuchung = buchungenRepository.save(buchung);
+
+
+        //Buchungen savedBuchung = buchungenRepository.save(buchung);
+        benutzer.getBuchungen().add(buchung);
+        benutzerRepository.save(benutzer);
 
         // 返回 BuchungenResponseDto
-        return mapper.toResponseDto(savedBuchung);
+        //return mapper.toResponseDto(savedBuchung);
+        return mapper.toResponseDto(buchung);
     }
 
     @Override
