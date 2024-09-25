@@ -4,10 +4,7 @@ import de.sp.superBnB_backend_18_9_2024.dtos.request.AuthRequestDto;
 import de.sp.superBnB_backend_18_9_2024.dtos.response.AuthResponseDto;
 import de.sp.superBnB_backend_18_9_2024.services.AuthentificationService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -28,7 +25,7 @@ public class AuthController {
         return authentificationService.signUp(dto);
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public void logout(HttpSession session) {
         session.invalidate();
     }

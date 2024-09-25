@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record AuthRequestDto(
-        @Email @NotBlank String email,
-        @NotBlank String password,
-        @NotNull(message = "Role cannot be null") Rolle role // 角色字段
+        Long id, // 用户ID
+        @NotBlank String name, // 用户名
+        @Email @NotBlank String email, // 用户邮箱
+        @NotBlank String password, // 用户密码
+        @NotNull(message = "Role cannot be null") Rolle rolle // 用户角色
 ) {
 }

@@ -6,6 +6,7 @@ import de.sp.superBnB_backend_18_9_2024.services.FerienwohnungenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class FerienwohnungenController {
 
     /*   - POST /api/properties: Eine neue Ferienwohnung hinzufügen (nur für Administratoren)*/
     //pending Admin recht
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<FerienwohnungenResponseDto> addProperty(@RequestBody FerienwohnungenCreateRequestDto ferienwohnungenCreateRequestDto) {
         FerienwohnungenResponseDto createdProperty = ferienwohnungenService.addProperty(ferienwohnungenCreateRequestDto);
@@ -38,6 +40,7 @@ public class FerienwohnungenController {
 
     /*  - PUT /api/properties/{id}: Eine bestehende Ferienwohnung aktualisieren (nur für Administratoren)*/
     //admin recht pending
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<FerienwohnungenResponseDto> updateProperty(@PathVariable Long id, @RequestBody FerienwohnungenCreateRequestDto ferienwohnungenCreateRequestDto) {
         FerienwohnungenResponseDto updatedProperty = ferienwohnungenService.updateProperty(id, ferienwohnungenCreateRequestDto);
@@ -46,6 +49,7 @@ public class FerienwohnungenController {
 
     /* - DELETE /api/properties/{id}: Eine Ferienwohnung löschen (nur für Administratoren)*/
     //admin recht pending
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(@PathVariable Long id) {
         ferienwohnungenService.deleteProperty(id);

@@ -6,6 +6,7 @@ import de.sp.superBnB_backend_18_9_2024.services.BuchungenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class BuchungenController {
 
     /*   - GET /api/bookings: Liste aller Buchungen anzeigen (nur für Administratoren)*/
     //admin recht pending
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<List<BuchungenResponseDto>> getAllBookings() {
         List<BuchungenResponseDto> bookings = buchungenService.getAllBookings();
