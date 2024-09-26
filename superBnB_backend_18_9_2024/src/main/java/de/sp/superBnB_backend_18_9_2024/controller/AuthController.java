@@ -4,6 +4,7 @@ import de.sp.superBnB_backend_18_9_2024.dtos.request.AuthRequestDto;
 import de.sp.superBnB_backend_18_9_2024.dtos.response.AuthResponseDto;
 import de.sp.superBnB_backend_18_9_2024.services.AuthentificationService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,8 +17,8 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public void signin() {
-        // 处理用户登录逻辑
+    public String signin(Authentication authentication) {
+        return authentificationService.token(authentication);
     }
 
     @PostMapping("/signup")
