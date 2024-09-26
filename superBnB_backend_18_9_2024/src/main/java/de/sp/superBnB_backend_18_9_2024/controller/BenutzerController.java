@@ -25,14 +25,6 @@ public class BenutzerController {
         List<BenutzerResponseDto> users = benutzerService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-/*
-    @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<BenutzerResponseDto>> getAllUsers(Principal principal) {
-        System.out.println("当前用户: " + principal.getName());
-        List<BenutzerResponseDto> users = benutzerService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }*/
 
     /* - POST /api/v1/users: Einen neuen Benutzer anlegen (nur für Administratoren) */
     @PreAuthorize("hasAuthority('ADMIN')")  // 仅管理员权限
