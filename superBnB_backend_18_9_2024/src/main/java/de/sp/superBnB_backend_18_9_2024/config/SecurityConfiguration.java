@@ -10,23 +10,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-//@EnableMethodSecurity
 @Configuration
 @EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     private RsaKeyProperties rsaKeys;
@@ -43,10 +46,29 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
                 .build();
+    }
+
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(this::extractAuthorities);
+        return converter;
+    }
+
+    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        List<String> scopes = jwt.getClaimAsStringList("scope");
+        if (scopes == null) {
+            return List.of(); // 如果没有权限，返回空列表
+        }
+        return scopes.stream()
+                .map(scope -> new SimpleGrantedAuthority(scope))
+                .collect(Collectors.toList());
     }
 
     @Bean
