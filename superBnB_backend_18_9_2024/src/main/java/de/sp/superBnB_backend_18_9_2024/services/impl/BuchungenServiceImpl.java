@@ -55,8 +55,6 @@ public class BuchungenServiceImpl implements BuchungenService {
         buchung.setCheckoutDatum(buchungenCreateRequestDto.checkoutDatum());
 
         // 保存 Buchungen 实体
-
-
         //Buchungen savedBuchung = buchungenRepository.save(buchung);
         benutzer.getBuchungen().add(buchung);
         benutzerRepository.save(benutzer);

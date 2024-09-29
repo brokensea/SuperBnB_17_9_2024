@@ -41,4 +41,6 @@ public class BenutzerController {
         benutzerService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

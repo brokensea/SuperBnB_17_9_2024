@@ -18,6 +18,8 @@ public class AuthController {
 
     @PostMapping("/signin")
     public String signin(Authentication authentication) {
+
+        System.out.println(authentication.getAuthorities().toString());
         return authentificationService.token(authentication);
     }
 
@@ -30,4 +32,6 @@ public class AuthController {
     public void logout(HttpSession session) {
         session.invalidate();
     }
+    
+
 }
