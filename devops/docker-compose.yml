@@ -2,7 +2,7 @@ services:
   superbnbdb:
     image: postgres
     environment:
-      - POSTGRES_PASSWORD=passworde
+      - POSTGRES_PASSWORD=password
       - POSTGRES_USER=superbnb
       - POSTGRES_DB=superBnB_DB
     ports:

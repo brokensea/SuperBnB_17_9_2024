@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
+                        /* .requestMatchers("/api/v1/users").hasRole("ADMIN")  *///fix try
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
@@ -61,7 +62,7 @@ public class SecurityConfiguration {
         return converter;
     }
 
-    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+    /*private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         List<String> scopes = jwt.getClaimAsStringList("scope");
         if (scopes == null) {
             return List.of(); // 如果没有权限，返回空列表
@@ -69,6 +70,15 @@ public class SecurityConfiguration {
         return scopes.stream()
                 .map(scope -> new SimpleGrantedAuthority(scope))
                 .collect(Collectors.toList());
+    }*/
+    private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
+        List<String> scopes = jwt.getClaimAsStringList("scope");
+        if (scopes != null) {
+            return scopes.stream()
+                    .map(scope -> new SimpleGrantedAuthority(scope)) // 确保加上 "ROLE_" 前缀
+                    .collect(Collectors.toList());
+        }
+        return List.of(); // 如果没有权限，返回空列表
     }
 
     @Bean
