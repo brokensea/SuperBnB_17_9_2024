@@ -2,11 +2,11 @@ services:
   superbnbdb:
     image: postgres
     environment:
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=passworde
       - POSTGRES_USER=superbnb
       - POSTGRES_DB=superBnB_DB
     ports:
-      - 5432:5432  # 5433可能哟啊修改为不同的端口，以避免与其他 PostgreSQL 服务冲突
+      - 5432:5432 # 5433可能哟啊修改为不同的端口，以避免与其他 PostgreSQL 服务冲突
   adminer:
     image: adminer
     ports:
