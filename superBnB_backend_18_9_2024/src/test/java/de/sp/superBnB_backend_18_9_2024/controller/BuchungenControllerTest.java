@@ -17,10 +17,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-class BenutzerControllerTest {
-
+class BuchungenControllerTest {
     @Mock
-    private static BenutzerService mockBenutzerService;
+    private BenutzerService mockBenutzerService;
 
     @InjectMocks
     private BenutzerController benutzerController;
@@ -28,7 +27,6 @@ class BenutzerControllerTest {
     private static BenutzerCreateRequestDto exampleBenutzerCreateRequestDto;
     private static BenutzerResponseDto exampleBenutzerResponseDto;
 
-    // 创建一个干净的测试环境
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -39,46 +37,45 @@ class BenutzerControllerTest {
         exampleBenutzerCreateRequestDto = new BenutzerCreateRequestDto(
                 "Max Mustermann",
                 "max@mustermann.de",
-                "password123",   // 添加密码
-                "USER"            // 添加角色
+                "password123",   // 示例密码
+                "USER"            // 示例角色，不进行验证
         );
 
         exampleBenutzerResponseDto = new BenutzerResponseDto(
                 1L,
                 "Max Mustermann",
                 "max@mustermann.de",
-                "USER"            // 添加角色
+                "USER"            // 示例角色，不进行验证
         );
     }
 
     // 获取所有用户
     @Test
     public void testGetAllUsers_ReturnListOfUsers() {
-        // (1) Arrange
+        // Arrange
         List<BenutzerResponseDto> users = List.of(exampleBenutzerResponseDto);
         when(mockBenutzerService.getAllUsers()).thenReturn(users);
 
-        // (2) Act
+        // Act
         ResponseEntity<List<BenutzerResponseDto>> response = benutzerController.getAllUsers();
 
-        // (3) Assert
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(users, response.getBody());
         verify(mockBenutzerService, times(1)).getAllUsers();
     }
 
-
     // 删除用户
     @Test
     public void testDeleteUser_Successfully() {
-        // (1) Arrange
+        // Arrange
         Long userId = 1L;
         doNothing().when(mockBenutzerService).deleteUser(userId);
 
-        // (2) Act
+        // Act
         ResponseEntity<Void> response = benutzerController.deleteUser(userId);
 
-        // (3) Assert
+        // Assert
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(mockBenutzerService, times(1)).deleteUser(userId);
     }
