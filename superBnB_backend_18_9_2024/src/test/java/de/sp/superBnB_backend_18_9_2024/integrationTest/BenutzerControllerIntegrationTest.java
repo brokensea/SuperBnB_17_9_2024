@@ -1,6 +1,5 @@
 package de.sp.superBnB_backend_18_9_2024.integrationTest;
 
-import com.jayway.jsonpath.JsonPath;
 import de.sp.superBnB_backend_18_9_2024.entities.Benutzer;
 import de.sp.superBnB_backend_18_9_2024.entities.Rolle;
 import de.sp.superBnB_backend_18_9_2024.repositories.BenutzerRepository;
@@ -14,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -28,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class BenutzerControllerIntegrationTest {
 
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -39,16 +36,13 @@ public class BenutzerControllerIntegrationTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        // 清空数据库
         benutzerRepository.deleteAll();
-
-        // 注册并登录管理员
         registerAdmin();
     }
 
     private void registerAdmin() throws Exception {
-        String registerJson = "{ \"email\": \"admin@mail.com\", \"password\": \"admin\", \"role\": \"ADMIN\" }";
-        mockMvc.perform(post("/api/auth/signup")
+        String registerJson = "{ \"name\": \"Admin\", \"email\": \"admin@mail.com\", \"password\": \"admin\", \"rolle\": \"ADMIN\" }";
+        mockMvc.perform(post("/api/v1/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(registerJson))
                 .andExpect(status().isOk());
@@ -62,65 +56,46 @@ public class BenutzerControllerIntegrationTest {
         String auth = username + ":" + password;
         String encodeAuth = "Basic " + Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
 
-        MvcResult result = mockMvc.perform(post("/api/auth/signin")
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/signin")
                         .header("Authorization", encodeAuth)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        // 提取 token
-        String jsonResponse = result.getResponse().getContentAsString();
-        adminToken = JsonPath.parse(jsonResponse).read("$.token");
-        assertNotNull(adminToken, "Admintoken darf nicht null sein ");
+        // 获取纯文本的 JWT token
+        adminToken = result.getResponse().getContentAsString();
+        assertNotNull(adminToken, "Admin token should not be null");
     }
+
 
     @Test
     public void testGetAllUsers_Successfully() throws Exception {
-        // 创建用户以进行测试
-        Benutzer user1 = new Benutzer();
-        user1.setName("User One");
-        user1.setEmail("user1@mail.com");
-        user1.setPassword("password");
-        user1.setRolle(Rolle.USER);
-        user1.setBuchungen(new ArrayList<>()); // 初始化 Buchungen 列表
-
-        Benutzer user2 = new Benutzer();
-        user2.setName("User Two");
-        user2.setEmail("user2@mail.com");
-        user2.setPassword("password");
-        user2.setRolle(Rolle.USER);
-        user2.setBuchungen(new ArrayList<>()); // 初始化 Buchungen 列表
+        Benutzer user1 = new Benutzer(null, "User One", "user1@mail.com", "password", Rolle.USER, List.of());
+        Benutzer user2 = new Benutzer(null, "User Two", "user2@mail.com", "password", Rolle.USER, List.of());
         benutzerRepository.saveAll(List.of(user1, user2));
 
         mockMvc.perform(get("/api/v1/users")
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].email").value("user1@mail.com"))
-                .andExpect(jsonPath("$[1].email").value("user2@mail.com"));
+                .andExpect(jsonPath("$[0].email").value("admin@mail.com"))
+                .andExpect(jsonPath("$[1].email").value("user1@mail.com"))
+                .andExpect(jsonPath("$[2].email").value("user2@mail.com"));
     }
 
     @Test
     public void testDeleteUser_Successfully() throws Exception {
-        // 创建用户以进行测试
-        Benutzer user = new Benutzer();
-        user.setName("User Name"); // 设置用户名
-        user.setEmail("user@mail.com"); // 设置邮箱
-        user.setPassword("password"); // 设置密码
-        user.setRolle(Rolle.USER); // 设置角色
-        user.setBuchungen(new ArrayList<>()); // 初始化 Buchungen 列表
-
+        Benutzer user = new Benutzer(null, "User Name", "user@mail.com", "password", Rolle.USER, List.of());
         benutzerRepository.save(user);
 
         mockMvc.perform(delete("/api/v1/users/" + user.getId())
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNoContent());
 
-        assertEquals(0, benutzerRepository.count());
+        assertEquals(1, benutzerRepository.count(), "The user repository should be empty after deletion");
     }
 
     @Test
     public void testDeleteUser_NotFound() throws Exception {
-        // 尝试删除不存在的用户
         mockMvc.perform(delete("/api/v1/users/" + 999L)
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isNotFound());

@@ -23,14 +23,17 @@ public class BenutzerController {
         List<BenutzerResponseDto> users = benutzerService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-    
+
 
     /*  - DELETE /api/v1/users/{id}: Einen Benutzer löschen (nur für Administratoren) */
     @PreAuthorize("hasAuthority('ADMIN')")  // 仅管理员权限
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        if (!benutzerService.existsById(id)) {
+            return ResponseEntity.notFound().build();  // 返回404状态
+        }
         benutzerService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();  // 返回204状态
     }
 
 

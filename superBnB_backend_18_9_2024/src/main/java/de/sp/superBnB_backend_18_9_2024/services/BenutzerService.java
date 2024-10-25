@@ -10,5 +10,7 @@ public interface BenutzerService {
 
     BenutzerResponseDto createUser(BenutzerCreateRequestDto benutzerCreateRequestDto);
 
+    boolean existsById(Long id);
+
     void deleteUser(Long id);
 }

@@ -40,6 +40,10 @@ public class BenutzerServiceImpl implements BenutzerService {
         return mapper.toResponseDto(savedBenutzer);
     }
 
+    public boolean existsById(Long id) {
+        return benutzerRepository.existsById(id);
+    }
+
     @Override
     public void deleteUser(Long id) {
         benutzerRepository.deleteById(id);
