@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @EnableWebSecurity(debug = true)
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
     private RsaKeyProperties rsaKeys;
 
     public SecurityConfiguration(RsaKeyProperties rsaKeys) {
@@ -75,7 +74,7 @@ public class SecurityConfiguration {
         List<String> scopes = jwt.getClaimAsStringList("scope");
         if (scopes != null) {
             return scopes.stream()
-                    .map(scope -> new SimpleGrantedAuthority(scope)) // 确保加上 "ROLE_" 前缀
+                    .map(scope -> new SimpleGrantedAuthority(scope)) // 因为使用的是 @PreAuthorize("hasAuthority('ADMIN')") 所以不需要加上 "ROLE_" 前缀
                     .collect(Collectors.toList());
         }
         return List.of(); // 如果没有权限，返回空列表
